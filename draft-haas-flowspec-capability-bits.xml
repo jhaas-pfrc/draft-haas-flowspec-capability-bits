@@ -4,11 +4,10 @@
 <!ENTITY RFC2578 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2578.xml">
 <!ENTITY RFC4271 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4271.xml">
 <!ENTITY RFC5492 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.5492.xml">
-<!ENTITY RFC5575 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.5575.xml">
 <!ENTITY RFC8174 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.8174.xml">
+<!ENTITY RFC8955 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.8955.xml">
+<!ENTITY RFC8956 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.8956.xml">
 <!ENTITY FLOWSPECV2 SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.hares-idr-flowspec-v2">
-<!ENTITY FLOWSPECIPV6 SYSTEM "https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-idr-flow-spec-v6.xml">
-<!ENTITY RFC5575BIS SYSTEM "https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-idr-rfc5575bis.xml">
 <!ENTITY EXTOPT SYSTEM "https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-idr-ext-opt-param.xml">
 ]>
 <?xml-stylesheet type="text/xsl" href="rfc2629.xslt" ?>
@@ -36,7 +35,7 @@
 <?rfc subcompact="no" ?>
 <!-- keep one blank line between list items -->
 <!-- end of popular PIs -->
-<rfc category="std" docName="draft-haas-flowspec-capability-bits-00" ipr="trust200902">
+<rfc category="std" docName="draft-haas-flowspec-capability-bits-01" ipr="trust200902">
   <front>
     <title abbrev="flowspec-capability-bits">BGP Flowspec Capability Bits</title>
     <author fullname="Jeffrey Haas" initials="J" surname="Haas">
@@ -51,7 +50,7 @@
     <!-- <keyword/> -->
     <abstract>
       <t>
-        BGP Flowspec (RFC 5575) provides the ability to filter traffic using various matching
+        BGP Flowspec (RFC 8955) provides the ability to filter traffic using various matching
 	components.  The NLRI format currently defined does not permit incremental deployment of new
 	BGP Flowspec components.  This draft defines a new BGP Capability to permit incremental
 	deployment of such new Flowspec component types.
@@ -67,7 +66,7 @@
   <middle>
     <section title="Introduction">
       <t>
-        BGP Flowspec <xref target="RFC5575"/> provides a mechanism to distribute traffic flow
+        BGP Flowspec <xref target="RFC8955"/> provides a mechanism to distribute traffic flow
 	spcifications into BGP.  One general purpose of these flow specifications is for the
 	distribution of firewall rules to receiving routers, particularly for mitigating distributed
 	denial of service (DDoS) attacks.  The flow specification rules are encoded as BGP NLRI
@@ -75,19 +74,17 @@
       </t>
       <t>
         The matching components of a flow specification NLRI is a serialized set of optional
-	components.  The components are documented in <xref target="RFC5575"/>, Section 4.
-	<xref target="I-D.ietf-idr-flow-spec-v6"/> defines IPv6-specific components.  The full set
+	components.  The components are documented in <xref target="RFC8955"/>, Section 3.
+	<xref target="RFC8956"/> defines IPv6-specific components.  The full set
 	of Flowspec component types is maintained in an IANA registry located at the
 	<eref target="https://www.iana.org/assignments/flow-spec/flow-spec.xhtml">IANA Flow Spec
 	Component Types registry</eref>.
       </t>
       <t>
-        Work is currently ongoing to address deficiencies in <xref target="RFC5575"/> in 
-	<xref target="I-D.ietf-idr-rfc5575bis"/>.  In particular, unknown component types require
-	treatment as a malformed NLRI (<xref target="I-D.ietf-idr-rfc5575bis"/>, Section 4.1).  This
-	is due to the lack of a mandatory length element for the components in the NLRI.  Without
-	such a length, it is not possible to determine how to properly decode unknown components in
-	the Flowspec NLRI.
+	Unknown Flowspec component types require treatment as a malformed NLRI (
+	<xref target="RFC8955"/>, Section 4.2).  This is due to the lack of a mandatory length
+	element for the components in the NLRI.  Without such a length, it is not possible to
+	determine how to properly decode unknown components in the Flowspec NLRI.
       </t>
       <t>
         There has been active interest in the IDR Working Group to extend BGP Flowspec for
@@ -164,8 +161,8 @@
       </t>
       <t>
         The BGP Flowspec Capability Bits Capability SHOULD be sent by a BGP Speaker utilizing any
-	AFI/SAFI using BGP Flowspec encoding as defined in <xref target="RFC5575"/>, 
-	<xref target="I-D.ietf-idr-rfc5575bis"/> or <xref target="I-D.ietf-idr-flow-spec-v6"/>.
+	AFI/SAFI using BGP Flowspec encoding as defined in <xref target="RFC8955"/>, 
+	or <xref target="RFC8956"/>.
       </t>
       <t>
         The BGP Flowspec Capability Bits Capability MUST be sent by a BGP Speaker utilizing BGP
@@ -175,14 +172,17 @@
       <t>
         A BGP Speaker that has received the BGP Flowspec Capability Bits Capability MUST NOT
 	transmit a BGP Flowspec encoded NLRI that contains a component types that is not present in
-	the received bit-string.  The bit-string indicates not only willingness to implement the
-	functionality for that component, but also the ability to process NLRI containing that
-	component type.
+	the received bit-string.
+      </t>
+      <t>
+        A BGP Speaker that has received a BGP Flowspec related AFI/SAFI without this Capability MUST
+	treat the absence as equivalent to having received the Capability Bits covered by the base
+	specification for its defining RFC, <xref target="RFC8955"/> or <xref target="RFC8956"/>.
       </t>
     </section>
     <section title="Restricting BGP Flowspec Components in a Deployment">
       <t>
-        The filtering components specified in <xref target="RFC5575"/> are well supported in
+        The filtering components specified in <xref target="RFC8955"/> are well supported in
 	implementations of the RFC.  However, as new platforms work to support not only this
 	existing RFC, but future features, implementations may be unwilling or unable to support
 	the packet forwarding behaviors for a given component type.  The Flowspec Capability Bits
@@ -219,20 +219,20 @@
       <t>
 	The intent of this feature is two-fold: The receiving BGP Speaker may not understand how to
 	decode the unknown component and may simply terminate the session per 
-        <xref target="I-D.ietf-idr-rfc5575bis"/>, Section 4.1.  The received BGP Speaker may
-	understand how to decode the component in question, but may be unable or unwilling to
-	implement the packet forwarding behavior implemented by that component.  
+	<xref target="RFC8955"/>, Section 4.2.  The received BGP Speaker may understand how to
+	decode the component in question, but may be unable or unwilling to implement the packet
+	forwarding behavior implemented by that component.  
       </t>
     </section>
     <section anchor="Acknowledgements" title="Acknowledgements">
       <t>
-        TBD.
+        Thanks to Christoph Loibl for his comments on this proposal.
       </t>
     </section>
     <section title="Security Considerations">
       <t>
         All of the Security Considerations for 
-	<xref target="I-D.ietf-idr-rfc5575bis"/> and <xref target="I-D.ietf-idr-flow-spec-v6"/>
+	<xref target="RFC8955"/> and <xref target="RFC8956"/>
 	still apply.
       </t>
       <t>
@@ -253,11 +253,10 @@
   <back>
     <references title="Normative References">
       &RFC2119;
-      &RFC5575;
       &RFC5492;
       &RFC8174;
-      &RFC5575BIS;
-      &FLOWSPECIPV6;
+      &RFC8955;
+      &RFC8956;
     </references>
     <references title="Informative References">
       &RFC2578;
