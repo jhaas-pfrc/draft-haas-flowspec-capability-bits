@@ -131,13 +131,13 @@
             Example encoding for Capability Value:
 
               0                   1
-              0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 
-             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-             |0|1|1|1|1|1|1|1|1|1|1|1|1|1|1|0|0|
-             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+              0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+             |0|1|1|1|1|1|1|1|1|1|1|1|1|1|1|0|
+             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
    Bit 0 set to 0, bits 1..14 set to 1 showing support for all 
-   capabilities for IPv6 Flowspec, bits 15..16 set to 0.
+   capabilities for IPv6 Flowspec, bit 15 is set to 0.
         </artwork>
 	</figure>
       </t>
