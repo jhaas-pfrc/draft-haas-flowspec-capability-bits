@@ -7,7 +7,7 @@
 <!ENTITY RFC8174 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.8174.xml">
 <!ENTITY RFC8955 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.8955.xml">
 <!ENTITY RFC8956 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.8956.xml">
-<!ENTITY FLOWSPECV2 SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.hares-idr-flowspec-v2">
+<!ENTITY FLOWSPECV2 SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.hares-idr-flowspec-v2.xml">
 <!ENTITY EXTOPT SYSTEM "https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-idr-ext-opt-param.xml">
 ]>
 <?xml-stylesheet type="text/xsl" href="rfc2629.xslt" ?>
@@ -35,7 +35,7 @@
 <?rfc subcompact="no" ?>
 <!-- keep one blank line between list items -->
 <!-- end of popular PIs -->
-<rfc category="std" docName="draft-haas-flowspec-capability-bits-01" ipr="trust200902">
+<rfc category="std" docName="draft-haas-flowspec-capability-bits-02" ipr="trust200902" updates="8955">
   <front>
     <title abbrev="flowspec-capability-bits">BGP Flowspec Capability Bits</title>
     <author fullname="Jeffrey Haas" initials="J" surname="Haas">
@@ -81,15 +81,15 @@
 	Component Types registry</eref>.
       </t>
       <t>
-	Unknown Flowspec component types require treatment as a malformed NLRI (
-	<xref target="RFC8955"/>, Section 4.2).  This is due to the lack of a mandatory length
+	Unknown Flowspec component types require treatment as a malformed NLRI 
+	(<xref target="RFC8955"/>, Section 4.2).  This is due to the lack of a mandatory length
 	element for the components in the NLRI.  Without such a length, it is not possible to
 	determine how to properly decode unknown components in the Flowspec NLRI.
       </t>
       <t>
         There has been active interest in the IDR Working Group to extend BGP Flowspec for
 	additional purposes.  However, with this difficulty in being able to handle unknown
-	components, those new features unabled to be deployed in an BGP Flowspec domain in an
+	components, those new features are unable to be deployed in a BGP Flowspec domain in an
 	incremental fashion.  Either a carefully managed "flag day" deployment is required to avoid
 	disrupting existing sessions, or the Flowspec domain is carefully managed such that devices
 	with incompatible sets of known/unknown components are carefully separated in a "ships in
@@ -103,9 +103,7 @@
       <t>
         This document proposes to address the issues of incremental deployment of new BGP Flowspec
 	component types via a new BGP Capability <xref target="RFC5492"/>, the BGP Flowpec
-	Capability Bits.  In addition to addressing the issue of new BGP Flowspec component types
-	for new features, this capability also provides a mechanism to manage desired subsets of
-	Flowspec capabilities in a deployment.
+	Capability Bits.
       </t>
     </section>
     <section title="BGP Flowspec Capability Bits">
@@ -133,11 +131,11 @@
               0                   1
               0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
              +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-             |0|1|1|1|1|1|1|1|1|1|1|1|1|1|1|0|
+             |0|1|1|1|1|1|1|1|1|1|1|1|1|1|0|0|
              +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
-   Bit 0 set to 0, bits 1..14 set to 1 showing support for all 
-   capabilities for IPv6 Flowspec, bit 15 is set to 0.
+   Bit 0 set to 0, bits 1..13 set to 1 showing support for all 
+   capabilities for IPv6 Flowspec, bits 14 and 15 are set to 0.
         </artwork>
 	</figure>
       </t>
@@ -157,7 +155,7 @@
 	point.)
       </t>
       <t>
-        Bit-value 0 and 255 SHOULD be set to zero as they are RESERVED.
+        Bit-values 0 and 255 SHOULD be set to zero as they are RESERVED.
       </t>
       <t>
         The BGP Flowspec Capability Bits Capability SHOULD be sent by a BGP Speaker utilizing any
@@ -167,12 +165,12 @@
       <t>
         The BGP Flowspec Capability Bits Capability MUST be sent by a BGP Speaker utilizing BGP
 	Flowspec encoding with a component type not defined in those documents previously mentioned.
-	(I.e. component types 15..254.)
+	(I.e. component types not in the range 1..13.)
       </t>
       <t>
         A BGP Speaker that has received the BGP Flowspec Capability Bits Capability MUST NOT
-	transmit a BGP Flowspec encoded NLRI that contains a component types that is not present in
-	the received bit-string.
+	originate or propagate a BGP Flowspec encoded NLRI that contains a component types that is
+	not present in the received bit-string.
       </t>
       <t>
         A BGP Speaker that has received a BGP Flowspec related AFI/SAFI without this Capability MUST
@@ -180,17 +178,32 @@
 	specification for its defining RFC, <xref target="RFC8955"/> or <xref target="RFC8956"/>.
       </t>
     </section>
-    <section title="Restricting BGP Flowspec Components in a Deployment">
+    <section title="Propagation of Known Components and Mismatch with Local Filtering Capabilities">
       <t>
-        The filtering components specified in <xref target="RFC8955"/> are well supported in
-	implementations of the RFC.  However, as new platforms work to support not only this
-	existing RFC, but future features, implementations may be unwilling or unable to support
-	the packet forwarding behaviors for a given component type.  The Flowspec Capability Bits
-	provides the ability for an implementation to limit what forms of filtering are executed by
-	the BGP Speaker.
+        There may be circumstances where a BGP Speaker is capable of parsing Flowspec components
+	that it is not capable of implementing as filters.  Section 4.2 of <xref target="RFC8955"/>
+	specifies that:
+	<list><t>
+	  "All combinations of components within a single Flow Specification are allowed.  However,
+	  some combinations cannot match any packets (e.g., "ICMP Type AND Port" will never match
+	  any packets) and thus SHOULD NOT be propagated by BGP."
+	</t></list>
+      </t>
+      <t>
+        This document updates that text to:
+	<list><t>
+	  "All combinations of components within a single Flow Specification are allowed.  However,
+	  some combinations cannot match any packets (e.g., "ICMP Type AND Port" will never match
+	  any packets) and thus SHOULD NOT be propagated by BGP.
+	  </t>
+	  <t>
+	  "When BGP Flowspec component types are understood and the operator determines that
+	  deployment-wide filtering intent would not be comporomised by propagating Flowepec routes
+	  that cannot match any packets, it SHOULD propagate the route in BGP.  This permits NLRI
+	  with known components to be propagated to downstream BGP Speakers in the deployment."
+	</t></list>
       </t>
     </section>
-
     <section title="BGP Flowspec Implications for Filtered NLRI">
       <t>
         BGP Flowspec NLRI encode match operations for traffic filtering rules.  Filtering is an
@@ -200,7 +213,7 @@
       <t>
         When a BGP Flowspec NLRI is not propagated due to filtering by this feature, or by user
 	policy, there is the potential that the network-wide filtering intent may be compromised by
-	the missing rules.  The exact impact of this filtering will depend on the relative
+	the missing rules.  The exact impact of this on filtering will depend on the relative
 	independence of the full set of BGP Flowspec routes in the BGP Flowspec routing domain.
       </t>
       <t>
@@ -216,17 +229,11 @@
 	its peer and receives a BGP Flowspec NLRI with an unacceptable component (not in its
 	bit-string), it MAY terminate the BGP session by sending a NOTIFICATION message.
       </t>
-      <t>
-	The intent of this feature is two-fold: The receiving BGP Speaker may not understand how to
-	decode the unknown component and may simply terminate the session per 
-	<xref target="RFC8955"/>, Section 4.2.  The received BGP Speaker may understand how to
-	decode the component in question, but may be unable or unwilling to implement the packet
-	forwarding behavior implemented by that component.  
-      </t>
     </section>
     <section anchor="Acknowledgements" title="Acknowledgements">
       <t>
-        Thanks to Christoph Loibl for his comments on this proposal.
+	Thanks to Aseem Choudhary, Jakob Heitz, Christoph Loibl, Robert Raszuk for their comments on
+	this proposal.
       </t>
     </section>
     <section title="Security Considerations">
@@ -272,6 +279,21 @@
       </t>
       <t>
         That said, the author is aware of how annoying the code for that construct can be.
+      </t>
+    </section>
+    <section title="Open Issues">
+      <t>
+        <list style="symbols">
+	<t>
+          Are there circumstances where advertising capability bits for BGP Flowspec NLRI that need
+	  to vary on a per AFI-SAFI basis?  Currently, the IANA registry is a single name space for
+	  all supported and proposed BGP address families.  As an example, the Flowspec for NVO3
+	  feature has components that are defined that do not have incremental deployment issues due
+	  to being well formed with a length field.  However, since it still includes existing
+	  Flowspec filtering for the outer and inner IP headers, the issues addressed by this
+	  proposal still apply.
+        </t>
+	</list>
       </t>
     </section>
   </back>
