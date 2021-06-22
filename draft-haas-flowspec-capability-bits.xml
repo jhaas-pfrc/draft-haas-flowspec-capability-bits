@@ -35,7 +35,7 @@
 <?rfc subcompact="no" ?>
 <!-- keep one blank line between list items -->
 <!-- end of popular PIs -->
-<rfc category="std" docName="draft-haas-flowspec-capability-bits-02" ipr="trust200902" updates="8955">
+<rfc category="std" docName="draft-haas-flowspec-capability-bits-03" ipr="trust200902" updates="8955">
   <front>
     <title abbrev="flowspec-capability-bits">BGP Flowspec Capability Bits</title>
     <author fullname="Jeffrey Haas" initials="J" surname="Haas">
@@ -74,7 +74,7 @@
       </t>
       <t>
         The matching components of a flow specification NLRI is a serialized set of optional
-	components.  The components are documented in <xref target="RFC8955"/>, Section 3.
+	components.  The components are documented in <xref target="RFC8955"/>, Section 4.
 	<xref target="RFC8956"/> defines IPv6-specific components.  The full set
 	of Flowspec component types is maintained in an IANA registry located at the
 	<eref target="https://www.iana.org/assignments/flow-spec/flow-spec.xhtml">IANA Flow Spec
